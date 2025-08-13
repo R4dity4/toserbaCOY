@@ -10,9 +10,17 @@
                 <h5><i class="fas fa-arrow-up"></i> Form Penjualan</h5>
             </div>
             <div class="card-body">
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form action="{{ route('stok.out.store') }}" method="POST">
                     @csrf
-                    
                     <div class="mb-3">
                         <label for="barang_id" class="form-label">Pilih Produk <span class="text-danger">*</span></label>
                         <select class="form-select @error('barang_id') is-invalid @enderror" id="barang_id" name="barang_id" required>
@@ -61,8 +69,8 @@
                             @enderror
                         </div>
                         
-                        {{-- <div class="col-md-6 mb-3">
-                            <label for="jenis_keluar" class="form-label">Jenis  <span class="text-danger">*</span></label>
+                        <div class="col-md-6 mb-3">
+                            <label for="jenis_keluar" class="form-label">Jenis <span class="text-danger">*</span></label>
                             <select class="form-select @error('jenis_keluar') is-invalid @enderror" id="jenis_keluar" name="jenis_keluar" required>
                                 <option value="">Pilih Jenis</option>
                                 <option value="penjualan" {{ old('jenis_keluar') == 'penjualan' ? 'selected' : '' }}>Penjualan</option>
@@ -74,7 +82,7 @@
                             @error('jenis_keluar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div> --}}
+                        </div>
                     </div>
 
                     <div class="mb-3">

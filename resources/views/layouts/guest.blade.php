@@ -83,29 +83,6 @@
             </button>
             <div class="collapse navbar-collapse menu-stok" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="stokDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-warehouse"></i> Transaksi
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('stok.in.form') }}"><i class="fas fa-right-to-bracket"></i> Pembelian</a></li>
-                            <li><a class="dropdown-item" href="{{ route('stok.out.form') }}"><i class="fas fa-right-from-bracket"></i> Penjualan</a></li>
-                            <li class="nav-item dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#" id="riwayatDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-history"></i> Riwayat
-                                </a>
-                                <ul class="dropdown-menu dropdown-submenu-left">
-                                    <li><a class="dropdown-item" href="{{ route('stok.in.index') }}"><i class="fas fa-list"></i> Beli</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('stok.out.index') }}"><i class="fas fa-list"></i> Jual</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('produk.index') }}">
-                            <i class="fas fa-box"></i> Produk
-                        </a>
-                    </li>
                     @guest
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>

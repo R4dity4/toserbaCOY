@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
 @section('title', 'Selamat Datang - Sistem Inventory Toserba')
 
@@ -31,10 +31,10 @@
 </style>
 
 <!-- Video Background -->
-{{-- <video autoplay muted loop class="video-background">
+<video autoplay muted loop class="video-background">
     <source src="images/bg.mp4" type="video/mp4">
     Your browser does not support the video tag.
-</video> --}}
+</video>
 
 <!-- Content Overlay -->
 <div class="text-center">

@@ -34,15 +34,14 @@
                             <td>{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d/m/Y') }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    @if($item->produk)
-                                        <img src="{{ asset('storage/' . $item->produk) }}" 
-                                             alt="{{ $item->produk->nama_barang }}" 
-                                             class="rounded me-2" 
-                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                    @if($item->produk && $item->produk->gambar)
+                                        <img src="{{ asset( $item->produk->gambar) }}" alt="{{ $item->produk->nama_barang }}" class="img-thumbnail" style="max-width: 80px;">
+                                    @else
+                                        <img src="{{ asset('images/produk/default.png') }}" alt="No Image" class="img-thumbnail" style="max-width: 80px;">
                                     @endif
                                     <div>
-                                        <strong>{{ $item->produk->nama_barang }}</strong><br>
-                                        <small class="text-muted">{{ $item->produk->kode_barang }}</small>
+                                        <strong>{{ $item->produk->nama_barang ?? '-' }}</strong><br>
+                                        <small class="text-muted">{{ $item->produk->kode_barang ?? '-' }}</small>
                                     </div>
                                 </div>
                             </td>
