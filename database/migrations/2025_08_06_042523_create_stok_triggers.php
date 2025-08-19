@@ -38,7 +38,7 @@ return new class extends Migration
             END
         ');
 
-        // Create trigger for stok_out - decreases stock quantity and updates harga_jual
+    // Create trigger for stok_out - decreases stock quantity (hapus update harga_jual)
         DB::unprepared('
             CREATE TRIGGER update_stok_after_stok_out_insert
             AFTER INSERT ON stok_out
@@ -63,13 +63,7 @@ return new class extends Migration
                         updated_at = NOW()
                     WHERE barang_id = NEW.barang_id;
                     
-                    -- Update harga_jual if harga_satuan is provided
-                    IF NEW.harga_satuan IS NOT NULL AND NEW.harga_satuan > 0 THEN
-                        UPDATE harga 
-                        SET harga_jual = NEW.harga_satuan,
-                            updated_at = NOW()
-                        WHERE barang_id = NEW.barang_id AND status = "aktif";
-                    END IF;
+                    -- (Update harga_jual dihapus, perubahan harga sekarang hanya lewat form produk)
                 ELSE
                     SIGNAL SQLSTATE "45000" 
                     SET MESSAGE_TEXT = "Stok tidak mencukupi untuk pengeluaran barang";

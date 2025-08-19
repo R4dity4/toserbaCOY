@@ -11,11 +11,11 @@
         body {
             overflow-x: hidden;
         }
-        
+
         .dropdown-submenu {
             position: relative;
         }
-        
+
         .dropdown-submenu .dropdown-menu {
             top: 0;
             left: 100%;
@@ -24,23 +24,23 @@
             max-width: 200px;
             white-space: nowrap;
         }
-        
+
         /* Check if submenu would overflow and position to left instead */
         .dropdown-submenu.dropdown-submenu-left .dropdown-menu {
             left: -100%;
             right: 100%;
         }
-        
+
         .dropdown-submenu:hover > .dropdown-menu {
             display: block;
         }
-        
+
         /* Ensure dropdown stays within viewport */
         @media (min-width: 768px) {
             .navbar-nav .dropdown-menu {
                 max-width: calc(100vw - 40px);
             }
-            
+
             /* Auto-adjust submenu position based on available space */
             .dropdown-submenu:last-child .dropdown-menu,
             .dropdown-submenu:nth-last-child(2) .dropdown-menu {
@@ -53,7 +53,7 @@
                 justify-content: center;
             }
         }
-        
+
         @media (max-width: 767px) {
             .dropdown-submenu .dropdown-menu {
                 position: static !important;
@@ -89,14 +89,14 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('stok.in.form') }}"><i class="fas fa-right-to-bracket"></i> Pembelian</a></li>
-                            <li><a class="dropdown-item" href="{{ route('stok.out.form') }}"><i class="fas fa-right-from-bracket"></i> Penjualan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('stok.out.form') }}"><i class="fas fa-right-from-bracket"></i> Pengeluaran</a></li>
                             <li class="nav-item dropdown-submenu">
                                 <a class="dropdown-item dropdown-toggle" href="#" id="riwayatDropdown" role="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-history"></i> Riwayat
                                 </a>
                                 <ul class="dropdown-menu dropdown-submenu-left">
                                     <li><a class="dropdown-item" href="{{ route('stok.in.index') }}"><i class="fas fa-list"></i> Beli</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('stok.out.index') }}"><i class="fas fa-list"></i> Jual</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('stok.out.index') }}"><i class="fas fa-list"></i> Keluarkan</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -129,8 +129,8 @@
                             </ul>
                         </li>
                     @endguest
-                    
-                    
+
+
                 </ul>
             </div>
         </div>
@@ -159,18 +159,18 @@
         // Prevent horizontal scroll from dropdown submenu
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownSubmenus = document.querySelectorAll('.dropdown-submenu');
-            
+
             dropdownSubmenus.forEach(function(submenu) {
                 submenu.addEventListener('mouseenter', function() {
                     const submenuDropdown = this.querySelector('.dropdown-menu');
                     if (submenuDropdown) {
                         // Reset classes
                         this.classList.remove('dropdown-submenu-left');
-                        
+
                         // Get positions
                         const rect = submenuDropdown.getBoundingClientRect();
                         const viewportWidth = window.innerWidth;
-                        
+
                         // Check if submenu would overflow to the right
                         if (rect.right > viewportWidth) {
                             this.classList.add('dropdown-submenu-left');

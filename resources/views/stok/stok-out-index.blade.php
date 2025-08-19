@@ -4,9 +4,9 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-history"></i> History Penjualan</h2>
+    <h2><i class="fas fa-history"></i> History Pengeluaran</h2>
     <a href="{{ route('stok.out.form') }}" class="btn btn-danger">
-        <i class="fas fa-plus"></i> Jual
+        <i class="fas fa-plus"></i> Keluarkan Barang
     </a>
 </div>
 

@@ -53,13 +53,11 @@ class StokController extends Controller
         $request->validate([
             'barang_id' => 'required|exists:produk,barang_id',
             'jumlah_keluar' => 'required|integer|min:1',
-            'harga_satuan' => 'nullable|numeric|min:0',
             'tanggal_keluar' => 'required|date',
             'jenis_keluar' => 'required|in:penjualan,retur,rusak,hilang,transfer'
         ]);
 
-        $data = $request->all();
-        $data['total_harga'] = $data['jumlah_keluar'] * ($data['harga_satuan'] ?? 0);
+        $data = $request->only(['barang_id','jumlah_keluar','tanggal_keluar','jenis_keluar']);
 
         try {
             StokOut::create($data);

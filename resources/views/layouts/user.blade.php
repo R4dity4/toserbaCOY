@@ -9,8 +9,8 @@
     <style>
         body { overflow-x: hidden; }
         .navbar-user { background: #fff; border-bottom: 1px solid #eee; }
-        .navbar-user .navbar-brand { color: #0d6efd; font-weight: bold; }
-        .navbar-user .nav-link { color: #0d6efd; }
+        .navbar-user .navbar-brand { color: #fda10d; font-weight: bold; }
+        .navbar-user .nav-link { color: #fda10d; }
         .navbar-user .nav-link.active { font-weight: bold; }
     </style>
 </head>
@@ -26,9 +26,18 @@
             <div class="collapse navbar-collapse" id="navbarUser">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('user') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">Beranda</a>
+                        <a class="nav-link {{ request()->is('user') ? 'active' : '' }}" href="{{ route('user.dashboard') }}"><i class="fas fa-home"></i></a>
                     </li>
-                    {{-- Tambahkan menu user lain di sini --}}
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('user/shop') ? 'active' : '' }}" href="{{ route('user.shop') }}">
+                            <i class="fas fa-shopping-bag"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('user/cart') ? 'active' : '' }}" href="{{ route('user.cart') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf

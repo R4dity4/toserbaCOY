@@ -9,8 +9,8 @@ use App\Http\Controllers\AuthController;
 
 // Guest only routes
 Route::middleware('guest')->group(function () {
-    Route::get('/', function () { 
-        return view('welcome'); 
+    Route::get('/', function () {
+        return view('welcome');
     });
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -23,7 +23,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // Dashboard routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', function() { return view('admin.dashboard'); })->name('admin.dashboard');
+    Route::get('/admin', function() {
+        $totalProduk = \App\Models\Produk::count();
+        $totalUser = \App\Models\User::count();
+        $totalStok = \App\Models\Stok::sum('jumlah_stok');
+        return view('admin.dashboard', compact('totalProduk', 'totalUser', 'totalStok'));
+    })->name('admin.dashboard');
     // Semua route admin yang sudah ada
     Route::resource('produk', ProdukController::class);
     Route::get('/stok-in', [StokController::class, 'stokInForm'])->name('stok.in.form');
@@ -41,11 +46,12 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         $produk = \App\Models\Produk::with('harga')->where('status','aktif')->get();
         return view('user.shop', compact('produk'));
     })->name('user.shop');
-    // Cart dan checkout (struktur awal)
-    Route::get('/cart', function() {
-        // Nanti isi dengan data cart user
-        return view('user.cart');
-    })->name('user.cart');
+    // Cart
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('user.cart');
+    Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/{cartItem}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cartItem}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/checkout', [\App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
 });
 
 // Produk Routes

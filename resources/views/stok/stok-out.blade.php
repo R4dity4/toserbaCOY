@@ -49,14 +49,7 @@
                             <div class="form-text" id="stok-info">Pilih produk untuk melihat stok tersedia</div>
                         </div>
                         
-                        <div class="col-md-6 mb-3">
-                            <label for="harga_satuan" class="form-label">Harga Satuan</label>
-                            <input type="number" class="form-control @error('harga_satuan') is-invalid @enderror" 
-                                   id="harga_satuan" name="harga_satuan" value="{{ old('harga_satuan') }}" step="0.01" min="0">
-                            @error('harga_satuan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        
                     </div>
 
                     <div class="row">
@@ -85,11 +78,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="total_harga" class="form-label">Total Harga</label>
-                        <input type="number" class="form-control" id="total_harga" readonly>
-                        <div class="form-text">Otomatis dihitung dari jumlah × harga satuan</div>
-                    </div>
+                    
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('produk.index') }}" class="btn btn-secondary">
@@ -135,7 +124,6 @@
         document.getElementById('total_harga').value = total;
     }
 
-    document.getElementById('jumlah_keluar').addEventListener('input', calculateTotal);
-    document.getElementById('harga_satuan').addEventListener('input', calculateTotal);
+    // harga dihapus dari form, perhitungan total tidak diperlukan
 </script>
 @endsection

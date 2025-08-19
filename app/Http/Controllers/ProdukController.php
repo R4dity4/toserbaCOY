@@ -30,7 +30,9 @@ class ProdukController extends Controller
             'kategori' => 'required',
             'satuan' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'deskripsi' => 'nullable'
+            'deskripsi' => 'nullable',
+            'harga_beli' => 'required|numeric|min:0',
+            'harga_jual' => 'required|numeric|min:0'
         ]);
 
         $data = $request->all();
@@ -43,7 +45,13 @@ class ProdukController extends Controller
             $data['gambar'] = 'images/produk/' . $imageName;
         }
 
-        Produk::create($data);
+        $produk = Produk::create($data);
+
+        // Set harga aktif saat create
+        \App\Models\Harga::where('barang_id',$produk->barang_id)->update([
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+        ]);
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan!');
     }
@@ -69,7 +77,9 @@ class ProdukController extends Controller
             'kategori' => 'required',
             'satuan' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'deskripsi' => 'nullable'
+            'deskripsi' => 'nullable',
+            'harga_beli' => 'required|numeric|min:0',
+            'harga_jual' => 'required|numeric|min:0'
         ]);
 
         $data = $request->all();
@@ -88,6 +98,12 @@ class ProdukController extends Controller
         }
 
         $produk->update($data);
+
+        // Update harga aktif
+        \App\Models\Harga::where('barang_id',$produk->barang_id)->update([
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+        ]);
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate!');
     }

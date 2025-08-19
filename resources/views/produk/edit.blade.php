@@ -75,6 +75,19 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="harga_beli" class="form-label">Harga Beli <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" class="form-control @error('harga_beli') is-invalid @enderror" id="harga_beli" name="harga_beli" value="{{ old('harga_beli', optional($produk->harga->where('status','aktif')->sortByDesc('created_at')->first())->harga_beli) }}" required>
+                            @error('harga_beli')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="harga_jual" class="form-label">Harga Jual <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" class="form-control @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', optional($produk->harga->where('status','aktif')->sortByDesc('created_at')->first())->harga_jual) }}" required>
+                            @error('harga_jual')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="gambar" class="form-label">Gambar Produk</label>
                         <input type="file" class="form-control @error('gambar') is-invalid @enderror" 

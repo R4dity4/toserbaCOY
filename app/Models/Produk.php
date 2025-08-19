@@ -21,10 +21,10 @@ class Produk extends Model
 
 
     // public function harga()
-    // {
-    //     return $this->hasOne(harga::class, 'barang_id', 'barang_id');
-    // }
-
+    public function hargaRelasi()
+    {
+        return $this->hasMany(Harga::class, 'barang_id', 'barang_id');
+    }
     // Relationship with Stok
     public function stok()
     {
