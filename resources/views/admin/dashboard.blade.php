@@ -35,7 +35,7 @@
         <div class="card mb-4">
             <div class="card-header">Info</div>
             <div class="card-body">
-                <p>Silakan kelola data produk, user, dan stok melalui menu di atas.</p>
+                <p>Waktu adalah <span class="text-warning">emas</span>, tapi jam kantor jangan di colong ygy.</p>
             </div>
         </div>
     </div>

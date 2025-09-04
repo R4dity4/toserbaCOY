@@ -101,6 +101,14 @@
                     <button class="add-btn add-to-cart" data-id="{{ $item->barang_id }}">
                         <i class="fas fa-cart-plus me-1"></i> Tambah
                     </button>
+                    <button class="add-btn show-detail-btn mt-2" 
+                        data-nama="{{ $item->nama_barang }}"
+                        data-gambar="{{ asset($item->gambar ?? 'default.png') }}"
+                        data-kategori="{{ ucfirst(str_replace('_',' ', $item->kategori)) }}"
+                        data-harga="Rp {{ number_format($activePrice,0,',','.') }}"
+                    >
+                        <i class="fas fa-info-circle me-1"></i> Detail
+                    </button>
                 </div>
             </div>
         </div>
@@ -115,10 +123,44 @@
 </div>
 
 <div class="toast-cart" id="toastCart"><i class="fas fa-check-circle me-2 text-success"></i>Produk masuk ke cart.</div>
+
+<!-- Modal Detail Produk -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:24px; overflow:hidden;">
+            <div class="modal-header" style="background: linear-gradient(90deg,#1a1a1a 0%,#2d2d2d 50%,#4d4d4d 100%); color:#fff;">
+                <h5 class="modal-title" id="detailModalLabel">Detail Produk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter:invert(1);"></button>
+            </div>
+            <div class="modal-body" style="background:#fafafa;">
+                <div class="text-center mb-3">
+                    <img id="modalGambar" src="" alt="Gambar Produk" style="max-width:220px; border-radius:18px; box-shadow:0 8px 24px -8px rgba(0,0,0,.25);">
+                </div>
+                <div class="mb-2"><span class="badge bg-warning text-dark" id="modalKategori"></span></div>
+                <h4 id="modalNama"></h4>
+                <div class="price mb-2" id="modalHarga"></div>
+                <button class="add-btn add-to-cart" data-id="{{ $item->barang_id }}">
+                        <i class="fas fa-cart-plus me-1"></i> Tambah
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script>
+    // Modal detail produk
+    document.querySelectorAll('.show-detail-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('modalNama').textContent = btn.getAttribute('data-nama');
+            document.getElementById('modalGambar').src = btn.getAttribute('data-gambar');
+            document.getElementById('modalKategori').textContent = btn.getAttribute('data-kategori');
+            document.getElementById('modalHarga').textContent = btn.getAttribute('data-harga');
+            var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+            modal.show();
+        });
+    });
     const chips = document.querySelectorAll('.cat-chip');
     const items = document.querySelectorAll('.product-item');
     const searchInput = document.getElementById('searchInput');
@@ -169,6 +211,9 @@
             .then(data => {
                 if(data.success){
                     showToast('Produk masuk ke cart.');
+                    // show red dot on navbar cart
+                    const navDot = document.getElementById('navCartDot');
+                    if(navDot) navDot.classList.add('show');
                     btn.classList.add('btn-added');
                     btn.innerHTML = '<i class="fas fa-check me-1"></i> Ditambahkan';
                     setTimeout(()=>{ btn.innerHTML='<i class="fas fa-cart-plus me-1"></i> Tambah'; btn.classList.remove('btn-added'); }, 2200);

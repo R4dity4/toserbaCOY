@@ -2,7 +2,7 @@
 @section('title', 'Dashboard User')
 @section('content')
 <div class="container py-5">
-    <h2>Selamat datang, User!</h2>
-    <p>Ini adalah halaman sederhana untuk user/pelanggan. </p>
+    <h2>Selamat datang, {{ Auth::user()->name }}!</h2>
+    <p>Berbelanjalah sesuai kebutuhan Anda.</p>
 </div>
 @endsection

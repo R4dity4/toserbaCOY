@@ -10,7 +10,8 @@ use App\Http\Controllers\AuthController;
 // Guest only routes
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
-        return view('welcome');
+        $produk = \App\Models\Produk::with('harga')->where('status','aktif')->latest()->take(12)->get();
+        return view('welcome', compact('produk'));
     });
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);

@@ -70,10 +70,15 @@
                 justify-content: center;
             }
         }
+        /* Match user navbar styling */
+        .navbar-user { background: #fff; border-bottom: 1px solid #eee; position: sticky !important; z-index: 1000; }
+        .navbar-user .navbar-brand { color: #fda10d; font-weight: bold; }
+        .navbar-user .nav-link { color: #fda10d; }
+        .navbar-user .nav-link.active { font-weight: bold; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-user navbar-light">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
                 <i class="fas fa-boxes"></i> ToserbaCOY

@@ -3,7 +3,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card mt-5">
+        <div class="card mt-2">
             <div class="card-header">Register</div>
             <div class="card-body">
                 <form method="POST" action="{{ route('register') }}">
@@ -29,6 +29,7 @@
                     </div>
                     <button type="submit" class="btn btn-success w-100">Register</button>
                 </form>
+            Sudah punya akun? <a href=" {{ route ('login') }}"> klik disini </a>
             </div>
         </div>
     </div>

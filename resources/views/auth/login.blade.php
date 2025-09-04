@@ -20,6 +20,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
+                Belum punya akun? <a href=" {{ route ('register') }}"> klik disini </a>
             </div>
         </div>
     </div>
