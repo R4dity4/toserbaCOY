@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 
 
 
@@ -53,6 +54,10 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::patch('/cart/{cartItem}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cartItem}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
     Route::post('/checkout', [\App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
+
+    // Orders & Payment
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/paid', [OrderController::class, 'markPaid'])->name('orders.paid');
 });
 
 // Produk Routes

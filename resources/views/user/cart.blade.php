@@ -124,6 +124,10 @@
             .then(r=>r.json())
             .then(data=>{
                 if(data.success){
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
                     alert('Checkout berhasil');
                     location.reload();
                 } else {

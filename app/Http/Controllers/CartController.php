@@ -67,7 +67,8 @@ class CartController extends Controller
     public function checkout(Request $request)
     {
         $userId = Auth::id();
-        $items = CartItem::with('produk.stok')->where('user_id', $userId)->get();
+        $items = CartItem::with(['produk.stok','produk.harga' => function($q){ $q->where('status','aktif')->latest(); }])
+            ->where('user_id', $userId)->get();
         if ($items->isEmpty()) {
             return response()->json(['success'=>false, 'message'=>'Cart kosong']);
         }
@@ -78,25 +79,42 @@ class CartController extends Controller
             if ($available < $it->quantity) {
                 return response()->json([
                     'success'=>false,
-                    'message'=>'Stok tidak cukup untuk '+$it->produk->nama_barang
+                    'message'=>'Stok tidak cukup untuk ' . $it->produk->nama_barang
                 ], 422);
             }
         }
 
         DB::beginTransaction();
         try {
+            // hitung total dan buat order
+            $total = 0;
             foreach ($items as $it) {
-                StokOut::create([
+                $aktif = $it->produk->harga->where('status','aktif')->sortByDesc('created_at')->first();
+                $price = $aktif->harga_jual ?? 0;
+                $total += $price * $it->quantity;
+            }
+
+            $order = \App\Models\Order::create([
+                'user_id' => $userId,
+                'status' => 'pending',
+                'total_amount' => $total,
+            ]);
+
+            foreach ($items as $it) {
+                $aktif = $it->produk->harga->where('status','aktif')->sortByDesc('created_at')->first();
+                $price = $aktif->harga_jual ?? 0;
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
                     'barang_id' => $it->barang_id,
-                    'jumlah_keluar' => $it->quantity,
-                    'tanggal_keluar' => now()->toDateString(),
-                    'jenis_keluar' => 'penjualan',
-                    'status' => 'approved'
+                    'quantity' => $it->quantity,
+                    'price' => $price,
                 ]);
             }
+
+            // kosongkan cart
             CartItem::where('user_id',$userId)->delete();
             DB::commit();
-            return response()->json(['success'=>true, 'message'=>'Checkout berhasil']);
+            return response()->json(['success'=>true, 'message'=>'Order dibuat','redirect' => route('orders.show', $order)]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success'=>false, 'message'=>'Checkout gagal','error'=>$e->getMessage()], 500);
