@@ -30,9 +30,9 @@
             right: 100%;
         }
 
-        .dropdown-submenu:hover > .dropdown-menu {
-            display: block;
-        }
+        /* Show submenu only when parent has .open (we toggle this via JS on click) */
+        .dropdown-submenu > .dropdown-menu { display: none; }
+        .dropdown-submenu.open > .dropdown-menu { display: block; }
 
         /* Ensure dropdown stays within viewport */
         @media (min-width: 768px) {
@@ -128,8 +128,6 @@
                             </ul>
                         </li>
                     @endguest
-
-
                 </ul>
             </div>
         </div>
@@ -174,6 +172,31 @@
                         if (rect.right > viewportWidth) {
                             this.classList.add('dropdown-submenu-left');
                         }
+                    }
+                });
+            });
+            // Toggle submenu open/close on click (instead of hover) for accessibility and touch devices
+            document.querySelectorAll('.dropdown-submenu').forEach(function(submenu){
+                const toggle = submenu.querySelector('.dropdown-toggle');
+                if(!toggle) return;
+                // ensure aria attribute exists
+                toggle.setAttribute('aria-haspopup','true');
+                toggle.setAttribute('aria-expanded', toggle.getAttribute('aria-expanded') || 'false');
+                toggle.addEventListener('click', function(e){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const isOpen = submenu.classList.toggle('open');
+                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+            });
+
+            // Close any open submenu when clicking outside
+            document.addEventListener('click', function(e){
+                document.querySelectorAll('.dropdown-submenu.open').forEach(function(openSub){
+                    if(!openSub.contains(e.target)){
+                        openSub.classList.remove('open');
+                        const toggle = openSub.querySelector('.dropdown-toggle');
+                        if(toggle) toggle.setAttribute('aria-expanded','false');
                     }
                 });
             });

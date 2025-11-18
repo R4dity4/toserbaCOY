@@ -52,6 +52,10 @@
                 <div class="card-header">Instruksi Pembayaran</div>
                 <div class="card-body">
                     <p>Status: <span class="badge bg-{{ $order->status==='paid'?'success':'warning' }}">{{ strtoupper($order->status) }}</span></p>
+                    <div class="mb-3">
+                        <a href="{{ route('orders.invoice', $order) }}" target="_blank" class="btn btn-outline-secondary w-100 mb-2">Lihat Invoice</a>
+                        <a href="{{ route('orders.invoice.download', $order) }}" target="_blank" class="btn btn-primary w-100">Unduh Invoice (PDF)</a>
+                    </div>
                     @if($order->status !== 'paid')
                         <p>Silakan transfer ke rekening berikut:</p>
                         <ul>

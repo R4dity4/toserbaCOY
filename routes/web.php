@@ -18,6 +18,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    // Socialite Google OAuth
+    Route::get('/auth/google/redirect', [\App\Http\Controllers\SocialAuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [\App\Http\Controllers\SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 });
 
 // Logout (hanya untuk yang sudah login)
@@ -44,10 +47,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user', function() { return view('user.dashboard'); })->name('user.dashboard');
-    Route::get('/shop', function() {
-        $produk = \App\Models\Produk::with('harga')->where('status','aktif')->get();
-        return view('user.shop', compact('produk'));
-    })->name('user.shop');
+    Route::get('/shop', [\App\Http\Controllers\ShopController::class, 'index'])->name('user.shop');
+    // Wishlist
+    Route::post('/wishlist/toggle', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('user.wishlist');
     // Cart
     Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('user.cart');
     Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
@@ -56,9 +59,16 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/checkout', [\App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
 
     // Orders & Payment
+    Route::get('/user/orders', [OrderController::class, 'index'])->name('user.orders');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/paid', [OrderController::class, 'markPaid'])->name('orders.paid');
+    // Invoice
+    Route::get('/orders/{order}/invoice', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('orders.invoice');
+    Route::get('/orders/{order}/invoice/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('orders.invoice.download');
 });
+
+// Public product detail route (anyone can view product page)
+Route::get('/product/{produk}', [\App\Http\Controllers\ShopController::class, 'show'])->name('product.show');
 
 // Produk Routes
 // Route::resource('produk', ProdukController::class);

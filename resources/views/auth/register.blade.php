@@ -1,11 +1,14 @@
 @extends('layouts.guest')
 @section('title', 'Register')
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card mt-2">
-            <div class="card-header">Register</div>
-            <div class="card-body">
+<div class="auth-wrapper">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <div class="brand"><i class="fas fa-store"></i> Register</div>
+                </div>
+                <div class="card-body p-4">
                 <form method="POST" action="{{ route('register') }}">
                     @csrf
                     <div class="mb-3">
@@ -29,9 +32,18 @@
                     </div>
                     <button type="submit" class="btn btn-success w-100">Register</button>
                 </form>
-            Sudah punya akun? <a href=" {{ route ('login') }}"> klik disini </a>
+                @if(config('services.google.client_id'))
+                <div class="text-center mt-3">
+                    <p class="mb-3">atau</p>
+                    <a href="{{ route('auth.google.redirect') }}" class="btn google-btn w-100">
+                        <i class="fab fa-google"></i> <span>Daftar dengan Google</span>
+                    </a>
+                </div><br>
+                @endif
+            <div class="mt-3" style="text-align: center"> Sudah terdaftar? <a href=" {{ route ('login') }}"> Login di sini </a></div>
             </div>
         </div>
+    </div>
     </div>
 </div>
 @endsection

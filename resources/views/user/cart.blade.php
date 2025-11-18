@@ -40,14 +40,14 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="input-group input-group-sm justify-content-center" style="width:110px;">
-                                        <button class="btn btn-outline-secondary btn-minus">-</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-minus">-</button>
                                         <input type="text" class="form-control text-center quantity-input" value="{{ $item->quantity }}" style="max-width:45px;">
-                                        <button class="btn btn-outline-secondary btn-plus">+</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-plus">+</button>
                                     </div>
                                 </td>
                                 <td>Rp {{ number_format($harga,0,',','.') }}</td>
                                 <td class="text-end subtotal">Rp {{ number_format($subtotal,0,',','.') }}</td>
-                                <td class="text-end"><button class="btn btn-sm btn-link text-danger btn-remove"><i class="fas fa-trash"></i></button></td>
+                                <td class="text-end"><button type="button" class="btn btn-sm btn-link text-danger btn-remove"><i class="fas fa-trash"></i></button></td>
                             </tr>
                         @empty
                             <tr>
@@ -68,7 +68,7 @@
                         <strong id="cartTotal">Rp {{ number_format($total,0,',','.') }}</strong>
                     </div>
                     <hr>
-                    <button id="checkoutBtn" class="btn btn-warning w-100" {{ $total ? '' : 'disabled' }}>Checkout <i class="fas fa-credit-card ms-1"></i></button>
+                    <button type="button" id="checkoutBtn" class="btn btn-warning w-100" {{ $total ? '' : 'disabled' }}>Checkout <i class="fas fa-credit-card ms-1"></i></button>
                 </div>
             </div>
         </div>
@@ -98,16 +98,27 @@
                 method:'PATCH',
                 headers:{ 'Content-Type':'application/json','X-CSRF-TOKEN':csrf,'Accept':'application/json' },
                 body:JSON.stringify({ quantity: qty })
-            }).then(r=>r.json()).then(d=>{}).catch(console.error);
+            })
+            .then(r=>r.json())
+            .then(d=>{ console.log('updateServer response for id', id, d); })
+            .catch(err=>{ console.error('updateServer error', err); });
         }
         function apply(q){
-            if(q<1) q=1; input.value=q; const sub = price*q; subtotalCell.textContent='Rp '+format(sub); subtotalCell.dataset.raw=sub; recalcTotal(); updateServer(q); }
-        minus.addEventListener('click', ()=> apply(parseInt(input.value)-1));
-        plus.addEventListener('click', ()=> apply(parseInt(input.value)+1));
-        input.addEventListener('change', ()=> apply(parseInt(input.value)||1));
-        row.querySelector('.btn-remove').addEventListener('click', ()=>{
+            if(q<1) q=1;
+            input.value=q;
+            const sub = price*q;
+            subtotalCell.textContent='Rp '+format(sub);
+            subtotalCell.dataset.raw=sub;
+            recalcTotal();
+            updateServer(q);
+        }
+        minus.addEventListener('click', (e)=>{ e.stopPropagation(); apply(parseInt(input.value)-1); });
+        plus.addEventListener('click', (e)=>{ e.stopPropagation(); apply(parseInt(input.value)+1); });
+        input.addEventListener('change', (e)=>{ e.stopPropagation(); apply(parseInt(input.value)||1); });
+        row.querySelector('.btn-remove').addEventListener('click', (e)=>{
+            e.stopPropagation();
             fetch(`${cartBase}/${id}`, { method:'DELETE', headers:{'X-CSRF-TOKEN':csrf,'Accept':'application/json'} })
-                .then(r=>r.json()).then(()=>{ row.remove(); recalcTotal(); });
+                .then(r=>r.json()).then((d)=>{ console.log('remove response', d); row.remove(); recalcTotal(); }).catch(err=>console.error(err));
         });
     });
     recalcTotal();

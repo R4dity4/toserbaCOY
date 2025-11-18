@@ -18,6 +18,24 @@ class OrderController extends Controller
         return view('user.pay', compact('order'));
     }
 
+    public function index()
+    {
+        // List orders for the authenticated user (oldest first)
+        $orders = Order::where('user_id', auth()->id())
+            ->with(['items.produk.harga', 'payments'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('user.orders', compact('orders'));
+    }
+
+    public function history()
+    {
+        // fetch orders in ascending order (oldest first)
+        $orders = Order::where('user_id', auth()->id())->with('items')->orderBy('created_at','asc')->get();
+        return view('user.orders', compact('orders'));
+    }
+
     public function markPaid(Request $request, Order $order)
     {
         abort_unless($order->user_id === Auth::id(), 403);

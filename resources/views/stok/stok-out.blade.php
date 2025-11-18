@@ -7,7 +7,7 @@
     <div class="col-md-8 mx-auto">
         <div class="card">
             <div class="card-header">
-                <h5><i class="fas fa-arrow-up"></i> Form Penjualan</h5>
+                <h5><i class="fas fa-arrow-up"></i> Form Pengeluaran</h5>
             </div>
             <div class="card-body">
                 @if($errors->any())
@@ -26,7 +26,7 @@
                         <select class="form-select @error('barang_id') is-invalid @enderror" id="barang_id" name="barang_id" required>
                             <option value="">Pilih Produk</option>
                             @foreach($produk as $item)
-                            <option value="{{ $item->barang_id }}" data-stok="{{ $item->stok->jumlah_stok ?? 0 }}" 
+                            <option value="{{ $item->barang_id }}" data-stok="{{ $item->stok->jumlah_stok ?? 0 }}"
                                     {{ old('barang_id') == $item->barang_id ? 'selected' : '' }}>
                                 {{ $item->kode_barang }} - {{ $item->nama_barang }}
                                 (Stok: {{ $item->stok->jumlah_stok ?? 0 }})
@@ -40,28 +40,28 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="jumlah_keluar" class="form-label">Jumlah Jual <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control @error('jumlah_keluar') is-invalid @enderror" 
+                            <label for="jumlah_keluar" class="form-label">Jumlah <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control @error('jumlah_keluar') is-invalid @enderror"
                                    id="jumlah_keluar" name="jumlah_keluar" value="{{ old('jumlah_keluar') }}" min="1" required>
                             @error('jumlah_keluar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="form-text" id="stok-info">Pilih produk untuk melihat stok tersedia</div>
                         </div>
-                        
-                        
+
+
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="tanggal_keluar" class="form-label">Tanggal Jual <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control @error('tanggal_keluar') is-invalid @enderror" 
+                            <label for="tanggal_keluar" class="form-label">Tanggal <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control @error('tanggal_keluar') is-invalid @enderror"
                                    id="tanggal_keluar" name="tanggal_keluar" value="{{ old('tanggal_keluar', date('Y-m-d')) }}" required>
                             @error('tanggal_keluar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        
+
                         <div class="col-md-6 mb-3">
                             <label for="jenis_keluar" class="form-label">Jenis <span class="text-danger">*</span></label>
                             <select class="form-select @error('jenis_keluar') is-invalid @enderror" id="jenis_keluar" name="jenis_keluar" required>
@@ -78,7 +78,7 @@
                         </div>
                     </div>
 
-                    
+
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('produk.index') }}" class="btn btn-secondary">
@@ -102,11 +102,11 @@
         const selectedOption = this.options[this.selectedIndex];
         const stok = selectedOption.getAttribute('data-stok') || 0;
         const stokInfo = document.getElementById('stok-info');
-        
+
         if (this.value) {
             stokInfo.textContent = `Stok tersedia: ${stok}`;
             stokInfo.className = stok > 0 ? 'form-text text-success' : 'form-text text-danger';
-            
+
             // Set max value for jumlah_keluar
             document.getElementById('jumlah_keluar').setAttribute('max', stok);
         } else {

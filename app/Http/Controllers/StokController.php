@@ -30,7 +30,7 @@ class StokController extends Controller
 
         StokIn::create($data);
 
-        return redirect()->back()->with('success', 'Kamu berhasil nambah jumlah stoknya!');
+        return redirect()->route('stok.in.index')->with('success', 'Kamu berhasil nambah jumlah stoknya!');
     }
 
     public function stokInIndex()
@@ -44,7 +44,7 @@ class StokController extends Controller
         $produk = Produk::whereHas('stok', function($query) {
             $query->where('jumlah_stok', '>', 0);
         })->with('stok')->get();
-        
+
         return view('stok.stok-out', compact('produk'));
     }
 
@@ -77,7 +77,7 @@ class StokController extends Controller
     {
         $stokIn = StokIn::with('produk')->latest()->get();
         $stokOut = StokOut::with('produk')->latest()->get();
-        
+
         return view('stok.riwayat', compact('stokIn', 'stokOut'));
     }
 }

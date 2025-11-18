@@ -96,18 +96,30 @@
                 ->sortByDesc('created_at')
                 ->first()->harga_jual ?? 0;
         @endphp
-        <div class="col-6 col-sm-4 col-md-3 col-lg-3 mb-4 product-item" data-name="{{ strtolower($item->nama_barang) }}" data-category="{{ $item->kategori }}">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-3 mb-4 product-item" data-name="{{ strtolower($item->nama_barang) }}" data-category="{{ $item->kategori }}" data-id="{{ $item->barang_id }}">
             <div class="card product-card">
                 <div class="product-img-wrap">
-                    <button class="wishlist-btn" title="Favorit"><i class="far fa-heart"></i></button>
-                    <img class="img-fluid" style="max-height:250px; max-height:250px;" src="{{ asset($item->gambar ?? 'default.png') }}" alt="{{ $item->nama_barang }}">
+                    @auth
+                        <button type="button" class="wishlist-btn" title="Favorit" data-id="{{ $item->barang_id }}">
+                            <i class="{{ (isset($wishlist) && in_array($item->barang_id, $wishlist)) ? 'fas' : 'far' }} fa-heart" style="{{ (isset($wishlist) && in_array($item->barang_id, $wishlist)) ? 'color:#ff2d84;' : '' }}"></i>
+                        </button>
+                    @else
+                        <a href="{{ route('login') }}" style="text-decoration: none;" class="wishlist-btn" title="Favorit"><i class="far fa-heart"></i></a>
+                    @endauth
+                    <img class="img-fluid lazy" loading="lazy" decoding="async" style="max-height:250px; max-height:250px;" data-src="{{ asset($item->gambar ?? 'default.png') }}" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><rect width='10' height='10' fill='%23f5f5f5'/></svg>" alt="{{ $item->nama_barang }}">
                 </div>
                 <div class="p-3 d-flex flex-column">
                     <span class="p-meta">{{ ucfirst(str_replace('_',' ', $item->kategori)) }}</span>
                     <div class="p-title">{{ $item->nama_barang }}</div>
                     <div class="price mb-2">Rp {{ number_format($activePrice,0,',','.') }}</div>
+                    @auth
+                        <button type="button" class="add-btn add-to-cart" data-id="{{ $item->barang_id }}">
+                            <i class="fas fa-cart-plus me-1"></i> Tambah
+                        </button>
+                    @else
                         <a href="{{ route('login') }}" class="add-btn" style="display:inline-block;text-decoration:none;text-align:center;">Beli</a>
-                        <a href="{{ route('login') }}" class="add-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:4px;"><i class="fas fa-info-circle me-1"></i>Detail</a>
+                    @endauth
+                    {{-- <a href="{{ route('product.show', $item->barang_id) }}" class="add-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:4px;"><i class="fas fa-info-circle me-1"></i>Detail</a> --}}
                 </div>
             </div>
         </div>
@@ -120,6 +132,8 @@
         </div>
     @endforelse
 </div>
+
+    <div class="toast-cart" id="toastCart"><i class="fas fa-check-circle me-2 text-success"></i>Produk masuk ke cart.</div>
 
     <!-- Modal Detail Produk (reuse) -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -181,9 +195,25 @@
         toastTimer = setTimeout(()=> toast.classList.remove('show'), 2500);
     }
 
+    // make product card clickable
+    const productBase = '{{ url('product') }}';
+    document.querySelectorAll('.product-item').forEach(card => {
+        const id = card.getAttribute('data-id');
+        if(!id) return;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            const tag = e.target.tagName.toLowerCase();
+            if(['button','a','i','svg','path'].includes(tag)) return;
+            window.location.href = productBase + '/' + id;
+        });
+    });
+
     const csrfToken = '{{ csrf_token() }}';
+
+    // Add to cart (delegated to buttons)
     document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const id = btn.getAttribute('data-id');
             fetch("{{ route('cart.add') }}", {
                 method: 'POST',
@@ -195,19 +225,97 @@
                 body: JSON.stringify({ barang_id: id, quantity: 1 })
             })
             .then(r => r.json())
-            // .then(data => {
-            //     if(data.success){
-            //         showToast('Produk masuk ke cart.');
-            //         btn.classList.add('btn-added');
-            //         btn.innerHTML = '<i class="fas fa-check me-1"></i> Ditambahkan';
-            //         setTimeout(()=>{ btn.innerHTML='<i class="fas fa-cart-plus me-1"></i> Tambah'; btn.classList.remove('btn-added'); }, 2200);
-            //     } else {
-            //         showToast('Gagal menambah produk');
-            //     }
-            // })
+            .then(data => {
+                if(data.success){
+                    showToast('Produk masuk ke cart.');
+                    // show only cart dot(s)
+                    document.querySelectorAll('.dot-cart').forEach(el => el.classList.add('show'));
+                    btn.classList.add('btn-added');
+                    btn.innerHTML = '<i class="fas fa-check me-1"></i> Ditambahkan';
+                    setTimeout(()=>{ btn.innerHTML='<i class="fas fa-cart-plus me-1"></i> Tambah'; btn.classList.remove('btn-added'); }, 2200);
+                } else {
+                    showToast('Gagal menambah produk');
+                }
+            })
             .catch(() => showToast('Terjadi kesalahan'));
         });
     });
+
+    // Wishlist toggle + sync across tabs/pages
+    function applyWishlistUpdate(barangId, action){
+        document.querySelectorAll('.wishlist-btn').forEach(btn=>{
+            if(btn.getAttribute('data-id') == barangId){
+                const icon = btn.querySelector('i');
+                if(action === 'added'){
+                    icon.classList.remove('far'); icon.classList.add('fas'); icon.style.color = '#ff2d84';
+                } else {
+                    icon.classList.remove('fas'); icon.classList.add('far'); icon.style.color = '';
+                }
+            }
+        });
+    }
+
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            const id = btn.getAttribute('data-id');
+            if(!id) return; // guest links won't have data-id and will navigate to login
+            fetch("{{ route('wishlist.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ barang_id: id })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success){
+                    applyWishlistUpdate(id, data.action);
+                    try{ localStorage.setItem('wishlist_update', JSON.stringify({ barang_id: id, action: data.action, ts: Date.now() })); }catch(e){}
+                }
+            })
+            .catch(err => console.error('wishlist error', err));
+        });
+    });
+
+    window.addEventListener('storage', function(e){
+        if(!e.key) return;
+        if(e.key === 'wishlist_update'){
+            try{
+                const payload = JSON.parse(e.newValue || '{}');
+                if(payload && payload.barang_id){
+                    applyWishlistUpdate(payload.barang_id, payload.action);
+                }
+            } catch(err){}
+        }
+    });
+
+    // Lazy load helper (IntersectionObserver + fallback)
+    ;(function(){
+        function loadImg(img){
+            const src = img.getAttribute('data-src');
+            if(!src) return;
+            img.src = src;
+            img.classList.remove('lazy');
+        }
+        if('IntersectionObserver' in window){
+            const io = new IntersectionObserver((entries)=>{
+                entries.forEach(e=>{
+                    if(e.isIntersecting){
+                        loadImg(e.target);
+                        io.unobserve(e.target);
+                    }
+                });
+            }, {rootMargin: '200px 0px'});
+            document.querySelectorAll('img.lazy').forEach(img=> io.observe(img));
+        } else {
+            document.addEventListener('DOMContentLoaded', function(){
+                document.querySelectorAll('img.lazy').forEach(loadImg);
+            });
+        }
+    })();
 </script>
 @endsection
 
