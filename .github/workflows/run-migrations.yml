@@ -1,0 +1,40 @@
+name: Run Laravel Migrations
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ main, master ]
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, bcmath, pcntl, pdo, pdo_mysql, pdo_pgsql
+          coverage: none
+
+      - name: Get composer cache
+        id: composer-cache
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          php -r "file_put_contents('.env', str_replace('DB_CONNECTION=mysql', 'DB_CONNECTION=pgsql', file_get_contents('.env')));"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Run migrations
+        env:
+          APP_ENV: production
+          APP_KEY: ${{ secrets.APP_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: php artisan migrate --force

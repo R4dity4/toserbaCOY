@@ -43,6 +43,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/stok-out', [StokController::class, 'stokOutStore'])->name('stok.out.store');
     Route::get('/stok-out/history', [StokController::class, 'stokOutIndex'])->name('stok.out.index');
     Route::get('/riwayat-stok', [StokController::class, 'riwayatStok'])->name('stok.riwayat');
+    // Admin Orders monitoring
+    Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+    // Unread/pending orders count for admin UI (AJAX polling)
+    Route::get('/admin/orders/unread-count', [\App\Http\Controllers\Admin\OrderController::class, 'unreadCount'])->name('admin.orders.unread_count');
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {

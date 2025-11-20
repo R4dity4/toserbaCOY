@@ -97,6 +97,15 @@
     .navbar-user .navbar-brand { color: var(--brand); font-weight: bold; }
     .navbar-user .nav-link { color: var(--brand); }
     .navbar-user .nav-link.active { font-weight: bold; }
+    /* Keep guest nav items inline with brand (desktop + mobile) */
+    .navbar-user .container { display:flex; align-items:center; gap:12px; flex-wrap:nowrap; }
+    .navbar-user .navbar-collapse { display:flex !important; align-items:center; }
+    .navbar-user .navbar-nav { display:flex; gap:8px; align-items:center; margin-left:auto; flex-wrap:nowrap; }
+    .navbar-user .navbar-nav .nav-item .nav-link { padding: .4rem .6rem; white-space:nowrap; }
+    .navbar-user .navbar-brand { white-space:nowrap; }
+    /* allow horizontal scroll on very small screens instead of wrapping */
+    .navbar-user .navbar-collapse { overflow-x:auto; -webkit-overflow-scrolling: touch; }
+    .navbar-user .navbar-collapse::-webkit-scrollbar{ display:none; }
     </style>
 </head>
 <body>
@@ -105,19 +114,21 @@
             <a class="navbar-brand" href="{{ url('/') }}">
                 <i class="fas fa-boxes"></i> ToserbaCOY
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse menu-stok" id="navbarNav">
+            <!-- No burger toggler for guest mobile: show nav links directly -->
+            <div class="navbar-collapse menu-stok" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @guest
+                    <div style="display: flex;">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}"> Login</a>
+                            <a class="nav-link" href="{{ route('login') }}">Login</a>
                         </li>
-                        <div style="width: 2px; height: 24px; background-color:#c5c5c5" class="mt-2"></div>
+                        <li class="nav-item d-flex align-items-center">
+                            {{-- <span style="width:2px;height:24px;background-color:#c5c5c5;display:block;margin:0 6px;" aria-hidden="true"></span> --}}
+                        </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}"> Register</a>
+                            <a class="nav-link" href="{{ route('register') }}">Register</a>
                         </li>
+                    </div>
                     @else
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">

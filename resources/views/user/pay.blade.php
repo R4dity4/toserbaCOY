@@ -4,13 +4,6 @@
 <div class="container py-4">
     <h2 class="mb-3">Pembayaran Order #{{ $order->id }}</h2>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-
     <div class="row">
         <div class="col-lg-8 mb-3">
             <div class="card shadow-sm">
