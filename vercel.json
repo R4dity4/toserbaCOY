@@ -6,6 +6,11 @@
     },
     "routes": [
         { "src": "/build/(.*)", "dest": "/public/build/" },
+        { "src": "/(css|js)/(.*)", "dest": "/public/$1/$2" },
+        { "src": "/(images|fonts)/(.*)", "dest": "/public/$1/$2" },
+        { "src": "/images/(.*\\.(?:mp4|webm|ogg|mov))$", "dest": "/public/images/$1" },
+        { "src": "/(favicon.ico|robots.txt)", "dest": "/public/$1" },
+        { "src": "/(storage|uploads)/(.*)", "dest": "/public/$1/$2" },
         { "src": "/(css|js)/(.*)", "dest": "/public/$1/$2"},
         { "src": "/(.*)", "dest": "/api/index.php" }
     ],
