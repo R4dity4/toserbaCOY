@@ -11,9 +11,8 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        $produk = Produk::with(['stok', 'harga' => function($query) {
-            $query->where('status', 'aktif')->latest();
-        }])->get();
+        // Eager load stok and the current active harga (hasOne relation `currentHarga`)
+        $produk = Produk::with(['stok', 'currentHarga'])->get();
         return view('produk.index', compact('produk'));
     }
 
@@ -54,11 +53,25 @@ class ProdukController extends Controller
 
         $produk = Produk::create($data);
 
-        // Set harga aktif saat create
-        \App\Models\Harga::where('barang_id',$produk->barang_id)->update([
-            'harga_beli' => $request->harga_beli,
-            'harga_jual' => $request->harga_jual,
-        ]);
+        // Create or update initial harga record for this product
+        \App\Models\Harga::updateOrCreate(
+            ['barang_id' => $produk->barang_id],
+            [
+                'harga_beli' => $request->harga_beli,
+                'harga_jual' => $request->harga_jual,
+                'status' => 'aktif'
+            ]
+        );
+
+        // Ensure a stok row exists for the product
+        $initialStock = intval($request->input('jumlah_stok', 0));
+        \App\Models\Stok::updateOrCreate(
+            ['barang_id' => $produk->barang_id],
+            [
+                'jumlah_stok' => $initialStock,
+                'status_stok' => $initialStock > 0 ? 'tersedia' : 'habis'
+            ]
+        );
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan!');
     }
@@ -113,11 +126,27 @@ class ProdukController extends Controller
 
         $produk->update($data);
 
-        // Update harga aktif
-        \App\Models\Harga::where('barang_id',$produk->barang_id)->update([
-            'harga_beli' => $request->harga_beli,
-            'harga_jual' => $request->harga_jual,
-        ]);
+        // Update or create harga for this product
+        \App\Models\Harga::updateOrCreate(
+            ['barang_id' => $produk->barang_id],
+            [
+                'harga_beli' => $request->harga_beli,
+                'harga_jual' => $request->harga_jual,
+                'status' => 'aktif'
+            ]
+        );
+
+        // Update or create stok row if jumlah_stok provided
+        if ($request->has('jumlah_stok')) {
+            $updatedStock = intval($request->input('jumlah_stok', 0));
+            \App\Models\Stok::updateOrCreate(
+                ['barang_id' => $produk->barang_id],
+                [
+                    'jumlah_stok' => $updatedStock,
+                    'status_stok' => $updatedStock > 0 ? 'tersedia' : 'habis'
+                ]
+            );
+        }
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate!');
     }

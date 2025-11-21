@@ -46,16 +46,9 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($item->harga->count() > 0)
-                                        @php
-                                            $currentPrice = $item->harga->where('status', 'aktif')->sortByDesc('created_at')->first();
-                                        @endphp
-                                        @if($currentPrice)
-                                            <strong class="text-success">Rp {{ number_format($currentPrice->harga_jual, 0, ',', '.') }}</strong><br>
-                                            <small class="text-muted">Beli: Rp {{ number_format($currentPrice->harga_beli, 0, ',', '.') }}</small>
-                                        @else
-                                            <span class="text-muted">Belum ada harga</span>
-                                        @endif
+                                    @if($item->currentHarga)
+                                        <strong class="text-success">Rp {{ number_format($item->currentHarga->harga_jual, 0, ',', '.') }}</strong><br>
+                                        <small class="text-muted">Beli: Rp {{ number_format($item->currentHarga->harga_beli, 0, ',', '.') }}</small>
                                     @else
                                         <span class="text-muted">Belum ada harga</span>
                                     @endif
