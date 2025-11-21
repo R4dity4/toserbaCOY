@@ -35,7 +35,14 @@ class ProdukController extends Controller
             'harga_jual' => 'required|numeric|min:0'
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'kode_barang',
+            'nama_barang',
+            'kategori',
+            'satuan',
+            'deskripsi',
+            'status'
+        ]);
         
         // Handle image upload
         if ($request->hasFile('gambar')) {
@@ -82,7 +89,14 @@ class ProdukController extends Controller
             'harga_jual' => 'required|numeric|min:0'
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'kode_barang',
+            'nama_barang',
+            'kategori',
+            'satuan',
+            'deskripsi',
+            'status'
+        ]);
         
         // Handle image upload
         if ($request->hasFile('gambar')) {
