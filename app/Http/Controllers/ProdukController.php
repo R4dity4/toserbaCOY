@@ -6,6 +6,7 @@ use App\Models\Produk;
 use App\Models\Stok;
 use App\Models\Harga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
@@ -47,8 +48,11 @@ class ProdukController extends Controller
         if ($request->hasFile('gambar')) {
             $image = $request->file('gambar');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/produk'), $imageName);
-            $data['gambar'] = 'images/produk/' . $imageName;
+            $disk = env('FILESYSTEM_DISK', 'public');
+            // store file under folder 'produk' on configured disk
+            $path = Storage::disk($disk)->putFileAs('produk', $image, $imageName);
+            // store relative path in DB (e.g. 'produk/xxxxx.jpg')
+            $data['gambar'] = $path;
         }
 
         $produk = Produk::create($data);
@@ -114,14 +118,15 @@ class ProdukController extends Controller
         // Handle image upload
         if ($request->hasFile('gambar')) {
             // Delete old image if exists
-            if ($produk->gambar && file_exists(public_path($produk->gambar))) {
-                unlink(public_path($produk->gambar));
+            $disk = env('FILESYSTEM_DISK', 'public');
+            if ($produk->gambar && Storage::disk($disk)->exists($produk->gambar)) {
+                Storage::disk($disk)->delete($produk->gambar);
             }
-            
+
             $image = $request->file('gambar');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/produk'), $imageName);
-            $data['gambar'] = 'images/produk/' . $imageName;
+            $path = Storage::disk($disk)->putFileAs('produk', $image, $imageName);
+            $data['gambar'] = $path;
         }
 
         $produk->update($data);
@@ -154,8 +159,9 @@ class ProdukController extends Controller
     public function destroy(Produk $produk)
     {
         // Delete image if exists
-        if ($produk->gambar && file_exists(public_path($produk->gambar))) {
-            unlink(public_path($produk->gambar));
+        $disk = env('FILESYSTEM_DISK', 'public');
+        if ($produk->gambar && Storage::disk($disk)->exists($produk->gambar)) {
+            Storage::disk($disk)->delete($produk->gambar);
         }
 
         $produk->delete();
